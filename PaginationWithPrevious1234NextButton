@@ -27,3 +27,4 @@ for i in urls:
         price = item.find('h5').text
         count += 1
         print(' %s) Name: %s, Price: %s' % (count, name, price))
+        
