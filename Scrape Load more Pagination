@@ -1,0 +1,38 @@
+### Web Scraping of "https://oxylabs.io/blog" with "Load more" pagination. 
+
+# Imports ...
+import pandas as pd
+from bs4 import BeautifulSoup
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from time import sleep
+
+# # Set up the headless browser using selenium
+options = webdriver.ChromeOptions()
+options.add_argument('--headless')
+driver = webdriver.Chrome(options=options)
+
+# #1 Click on "Accept All Cookies" button 
+driver.get("http://oxylabs.io/blog")
+x = driver.find_element(By.ID, "CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll")
+x.click()
+sleep(3)
+
+data = [] # 
+# find the "Load More" button and click it
+while True:
+    load_more_button = driver.find_element(By.CSS_SELECTOR, '.css-vu3mae')
+    load_more_button.click()
+    sleep(4)
+
+    # scrape the data
+    soup = BeautifulSoup(driver.page_source, 'lxml')
+    m_block = soup.find_all("div", class_="css-1dmex2s e1kk1ckf0")
+    for block in m_block:
+        data1 = block.find('h5', class_='css-nc2ihr e1nywbhn0').text
+        data.append(data1)
+    # Pandas for csv output
+    df = pd.DataFrame(data)
+    df.to_csv('OxyLabsWithPagination.csv', index=False)
+    
+    
