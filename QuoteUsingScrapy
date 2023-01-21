@@ -1,0 +1,24 @@
+import scrapy
+
+class QuotesSpider(scrapy.Spider):
+    name = 'Quotes'
+    allowed_domains = ['quotes.toscrape.com']
+    start_urls = ['http://quotes.toscrape.com/']
+
+    def parse(self, response):
+        # The Main Block tag div with class quote
+        quotes = response.xpath('//div[@class="quote"]')
+        # For Loop to iterate the elements
+        for quote in quotes:
+            text = quote.xpath('.//span[@class="text"]/text()').get()
+            author = quote.xpath('.//small[@class="author"]/text()').get()
+            tag1 = quote.xpath('.//div[@class="tags"]/a[1][@class="tag"]/text()').get()
+            tag2 = quote.xpath('.//div[@class="tags"]/a[2][@class="tag"]/text()').get()
+            tag3 = quote.xpath('.//div[@class="tags"]/a[3][@class="tag"]/text()').get()
+            yield {'Quotes': text, 'Author': author, 'Tag1': tag1, 'Tag2': tag2, 'Tag3': tag3 }
+        # pagination
+        next_page = response.xpath('//li[@class="next"]/a/@href').get()
+        if next_page:
+            yield scrapy.Request(response.urljoin(next_page), callback=self.parse)
+
+        # Run this command scrapy crawl Quotes to check the output scraped data
