@@ -1,0 +1,25 @@
+# Data Scraping using scrapy 
+import scrapy
+
+class ToscrapeSpider(scrapy.Spider):
+    name = 'toscrape'
+    allowed_domains = ['books.toscrape.com']
+    start_urls = ['http://books.toscrape.com/']
+
+    def parse(self, response):
+        products = response.xpath('//article[@class="product_pod"]')
+        for product in products:
+            img_url = product.xpath('.//div[@class="image_container"]/a/img/@src').get()
+            name = product.xpath('.//h3/a/text()').get()
+            price = product.xpath('.//div[@class="product_price"]/p[@class="price_color"]/text()').get()
+            stock = product.xpath('.//div[@class="product_price"]/p[@class="instock availability"]/text()[2]').get().strip()
+            yield {'img_url':img_url,
+                    'name':name,
+                    'price':price,
+                    'stock':stock}
+            # Pagination
+            next_p = response.xpath('//li[@class="next"]/a/@href').get()
+            if next_p:
+                yield scrapy.Request(response.urljoin(next_p), callback=self.parse)
+
+
