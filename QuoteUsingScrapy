@@ -16,9 +16,13 @@ class QuotesSpider(scrapy.Spider):
             tag2 = quote.xpath('.//div[@class="tags"]/a[2][@class="tag"]/text()').get()
             tag3 = quote.xpath('.//div[@class="tags"]/a[3][@class="tag"]/text()').get()
             yield {'Quotes': text, 'Author': author, 'Tag1': tag1, 'Tag2': tag2, 'Tag3': tag3 }
-        # pagination
+        # pagination section
         next_page = response.xpath('//li[@class="next"]/a/@href').get()
         if next_page:
             yield scrapy.Request(response.urljoin(next_page), callback=self.parse)
+        # End of Pagination section
 
-        # Run this command scrapy crawl Quotes to check the output scraped data
+
+        # Run this command "scrapy crawl Quotes" to check the output scraped data in the console
+        # Download in csv file data using this command "scrapy crawl Quotes -o quotes.csv"
+        #Keep learning
